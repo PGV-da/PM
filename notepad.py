@@ -50,6 +50,67 @@ main_menu.add_cascade(label="View", menu=view)
 main_menu.add_cascade(label="Theme", menu=color_theme)
 
 
+tool_bar_label = ttk.Label(main_application)
+tool_bar_label.pack(side=tk.TOP,fill=tk.X)
+
+# Font Style Box
+font_tuple = tk.font.families()
+font_family = tk.StringVar
+font_box = ttk.Combobox(tool_bar_label,width=30,textvariable=font_family,state="readonly")
+font_box["values"] = font_tuple
+font_box.current(font_tuple.index("Arial"))
+font_box.grid(row=0,column=0,padx=5)
+
+# Font Size Box
+size_variable = tk.IntVar()
+font_size = ttk.Combobox(tool_bar_label,width=20,textvariable=size_variable,state="readonly")
+font_size["values"] = tuple(range(8,100,2))
+font_size.current(4)
+font_size.grid(row=0,column=1,padx=5)
+
+# Bold Button
+bold_icon = tk.PhotoImage(file="icon/bold.png")
+bold_btn = ttk.Button(tool_bar_label,image=bold_icon)
+bold_btn.grid(row=0,column=2,padx=5)
+
+# Italic Button
+italic_icon = tk.PhotoImage(file="icon/italic.png")
+italic_btn = ttk.Button(tool_bar_label,image=italic_icon)
+italic_btn.grid(row=0,column=3,padx=5)
+
+# UnderLine Button
+underline_icon = tk.PhotoImage(file="icon/underline.png")
+underline_btn = ttk.Button(tool_bar_label,image=underline_icon)
+underline_btn.grid(row=0,column=4,padx=5)
+
+# Font Color Button
+font_color_icon = tk.PhotoImage(file="icon/font_color.png")
+font_color_btn = ttk.Button(tool_bar_label,image=font_color_icon)
+font_color_btn.grid(row=0,column=5,padx=5)
+
+# Align Left
+align_left_icon = tk.PhotoImage(file="icon/align-left.png")
+align_left_btn = ttk.Button(tool_bar_label,image=align_left_icon)
+align_left_btn.grid(row=0,column=6,padx=5)
+
+# Align Center
+align_center_icon = tk.PhotoImage(file="icon/align-center.png")
+align_center_btn = ttk.Button(tool_bar_label,image=align_center_icon)
+align_center_btn.grid(row=0,column=7,padx=5)
+
+# Align Left
+align_right_icon = tk.PhotoImage(file="icon/align-right.png")
+align_right_btn = ttk.Button(tool_bar_label,image=align_right_icon)
+align_right_btn.grid(row=0,column=8,padx=5)
+
+# Text Editor
+text_editor = tk.Text(main_application)
+text_editor.config(wrap="word", relief=tk.FLAT)
+
+scroll_bar = tk.Scrollbar(main_application)
+text_editor.focus_set()
+scroll_bar.pack(side=tk.RIGHT,fill=tk.Y)
+
 # Theme Menu 
 color_icons = (light_theme, light_plus_theme, dark_theme, red_theme, monokai_theme, night_theme)
 color_dict = {
