@@ -107,9 +107,13 @@ align_right_btn.grid(row=0,column=8,padx=5)
 text_editor = tk.Text(main_application)
 text_editor.config(wrap="word", relief=tk.FLAT)
 
+
 scroll_bar = tk.Scrollbar(main_application)
 text_editor.focus_set()
 scroll_bar.pack(side=tk.RIGHT,fill=tk.Y)
+text_editor.pack(fill=tk.BOTH,expand=True)
+scroll_bar.config(command=text_editor.yview)
+text_editor.config(yscrollcommand=scroll_bar.set)
 
 # Theme Menu 
 color_icons = (light_theme, light_plus_theme, dark_theme, red_theme, monokai_theme, night_theme)
@@ -118,9 +122,11 @@ color_dict = {
     'Light Plus' : ("#474747","#e0e0e0"),
     'Dark' : ("#c4c4c4","#2d2d2d"),
     'Red' : ("#2d2d2d","#ffe8e8"),
-    'Monokai' : ("#d3b774","#474747"),
+    'Monokai' : ("#d3b774","#474747"), 
     'Night Blue' : ("#ededed","#6b9dc2")
 }
+
+
 
 count = 0
 for i in color_dict:
