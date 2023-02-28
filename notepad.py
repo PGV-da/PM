@@ -115,6 +115,23 @@ text_editor.pack(fill=tk.BOTH,expand=True)
 scroll_bar.config(command=text_editor.yview)
 text_editor.config(yscrollcommand=scroll_bar.set)
 
+# Status Bar (word & character) 
+status_bars = ttk.Label(main_application,text = "Status Bar")
+status_bars.pack(side=tk.BOTTOM)
+
+text_change = False
+
+def change_word(event = None):
+    global text_change
+    if text_editor.edit_modified():
+        text_change = True
+        word = len(text_editor.get(1.0,"end-1c").split())
+        character = len(text_editor.get(1.0,"end-1c").replace(" ",""))
+        status_bars.config(text=f"character : {character} word : {word}")
+    text_editor.edit_modified(False)
+
+text_editor.bind("<<Modified>>", change_word)
+
 # Theme Menu 
 color_icons = (light_theme, light_plus_theme, dark_theme, red_theme, monokai_theme, night_theme)
 color_dict = {
