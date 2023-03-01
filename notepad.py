@@ -55,7 +55,7 @@ tool_bar_label.pack(side=tk.TOP,fill=tk.X)
 
 # Font Style Box
 font_tuple = tk.font.families()
-font_family = tk.StringVar
+font_family = tk.StringVar()
 font_box = ttk.Combobox(tool_bar_label,width=30,textvariable=font_family,state="readonly")
 font_box["values"] = font_tuple
 font_box.current(font_tuple.index("Arial"))
@@ -114,6 +114,95 @@ scroll_bar.pack(side=tk.RIGHT,fill=tk.Y)
 text_editor.pack(fill=tk.BOTH,expand=True)
 scroll_bar.config(command=text_editor.yview)
 text_editor.config(yscrollcommand=scroll_bar.set)
+
+# Font Family and Function
+
+font_now = "Arial"
+font_size_now = 16
+
+def change_font(main_application):
+    global font_now
+    font_now = font_family.get()
+    text_editor.configure(font=(font_now,font_size_now))
+
+def change_size(main_application):
+    global font_size_now
+    font_size_now = size_variable.get()
+    text_editor.configure(font=(font_now,font_size_now))
+
+font_box.bind("<<ComboboxSelected>>",change_font)
+font_size.bind("<<ComboboxSelected>>",change_size)
+
+# Bold Function
+
+# print(tk.font.Font(font=text_editor["font"]).actual())
+
+def bold_fun():
+    text_get = tk.font.Font(font=text_editor["font"])
+    if text_get.actual()["weight"] == 'normal':
+        text_editor.configure(font=(font_now,font_size_now,"bold"))
+    if text_get.actual()["weight"] == 'bold':
+        text_editor.configure(font=(font_now,font_size_now,"normal"))
+
+bold_btn.configure(command=bold_fun)
+
+# Italic Function
+
+def italic_fun():
+    text_get = tk.font.Font(font=text_editor["font"])
+    if text_get.actual()["slant"] == 'roman':
+        text_editor.configure(font=(font_now,font_size_now,"italic"))
+    if text_get.actual()["slant"] == 'italic':
+        text_editor.configure(font=(font_now,font_size_now,"roman"))
+
+italic_btn.configure(command=italic_fun)
+
+# UnderLine Function
+
+def under_line_fun():
+    text_get = tk.font.Font(font=text_editor["font"])
+    if text_get.actual()["underline"] == 0:
+        text_editor.configure(font=(font_now,font_size_now,"underline"))
+    if text_get.actual()["underline"] == 1:
+        text_editor.configure(font=(font_now,font_size_now,"normal"))
+
+underline_btn.configure(command=under_line_fun)
+
+
+# Color Choose
+def color_choose():
+    color_var = tk.colorchooser.askcolor()
+    text_editor.configure(fg=color_var[1])
+
+font_color_btn.configure(command=color_choose)
+
+# Align Left
+def align_left():
+    text_get_all = text_editor.get(1.0,"end")
+    text_editor.tag_config("left",justify=tk.LEFT)
+    text_editor.delete(1.0,tk.END)
+    text_editor.insert(tk.INSERT,text_get_all,"left")
+
+align_left_btn.configure(command=align_left)
+
+# Align Center
+def align_center():
+    text_get_all = text_editor.get(1.0,"end")
+    text_editor.tag_config("center",justify=tk.CENTER)
+    text_editor.delete(1.0,tk.END)
+    text_editor.insert(tk.INSERT,text_get_all,"center")
+
+align_center_btn.configure(command=align_center)
+
+# Align Right
+def align_right():
+    text_get_all = text_editor.get(1.0,"end")
+    text_editor.tag_config("right",justify=tk.RIGHT)
+    text_editor.delete(1.0,tk.END)
+    text_editor.insert(tk.INSERT,text_get_all,"right")
+
+align_right_btn.configure(command=align_right)
+
 
 # Status Bar (word & character) 
 status_bars = ttk.Label(main_application,text = "Status Bar")
