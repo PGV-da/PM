@@ -252,11 +252,86 @@ edit.add_command(label="Clear all", image=clear_icon, compound=tk.LEFT,accelerat
 edit.add_command(label="Find", image=find_icon, compound=tk.LEFT,accelerator="Ctrl+F")
 
 # File Menu
-file.add_command(label="New", image=new_icon, compound=tk.LEFT,accelerator="Ctrl+N")
-file.add_command(label="Open", image=open_icon, compound=tk.LEFT,accelerator="Ctrl+O")
-file.add_command(label="Save", image=save_icon, compound=tk.LEFT,accelerator="Ctrl+S")
-file.add_command(label="Save as", image=save_as_icon, compound=tk.LEFT,accelerator="Ctrl+Alt+S")
-file.add_command(label="Exit", image=exit_icon, compound=tk.LEFT,accelerator="Ctrl+Q")
+
+text_url = " "
+
+def new_file(event = None):
+    global text_url
+    text_url = " "
+    text_editor.delete(1.0,tk.END)
+
+
+file.add_command(label="New", image=new_icon, compound=tk.LEFT,accelerator="Ctrl+N", command=new_file)
+
+def open_file(event = None):
+    global text_url
+    text_url = filedialog.askopenfilename(initialdir=os.getcwd(), title="Select File",filetypes=(("Text File","*.txt"),("All Files", "*.*")))
+    try:
+        with open(text_url,"r") as for_read:
+            text_editor.delete(1.0,tk.END)
+            text_editor.insert(1.0,for_read.read())
+    except FileNotFoundError:
+        return
+    except:
+        return
+    main_application.title(os.path.basename(text_url))
+
+file.add_command(label="Open", image=open_icon, compound=tk.LEFT,accelerator="Ctrl+O", command=open_file)
+ 
+def save_file(event=None):
+    global text_url
+    try:
+        if text_url:
+            content = str(text_editor.get(1.0,tk.END))
+            with open(text_url,"w",encoding="utf-8") as for_read:
+                for_read.write(content)
+        else:
+            text_url = filedialog.asksaveasfile(mode="w",defaultextension="txt",filetypes=(("Text File","*.txt"),("All Files", "*.*")))
+            content2 = text_editor.get(1.0,tk.END)
+            text_url.write(content2)
+            text_url.close()
+    except:
+        return
+
+file.add_command(label="Save", image=save_icon, compound=tk.LEFT,accelerator="Ctrl+S", command=save_file)
+
+def save_as_file(event = None):
+    global text_url
+    try:
+        content = text_editor.get(1.0,tk.END)
+        text_url = filedialog.asksaveasfile(mode="w",defaultextension="txt",filetypes=(("Text File","*.txt"),("All Files", "*.*")))
+        text_url.write(content)
+        text_url.close()
+    except:
+        return
+
+file.add_command(label="Save as", image=save_as_icon, compound=tk.LEFT,accelerator="Ctrl+Alt+S", command=save_as_file)
+
+def exit_fun(event = None):
+    global text_change
+    try:
+        if text_change:
+            mbox = messagebox.askyesnocancel("Warning","Do you want to save this file")
+            if mbox is True:
+                if text_url:
+                    content = text_editor.get(1.0,tk.END)
+                    with open (text_url,"w",encoding="utf-8") as for_read:
+                        for_read.write(content)
+                        main_application.destroy()
+                else:
+                    content2 = text_editor.get(1.0,tk.END)
+                    text_url = filedialog.asksaveasfile(mode = "w",defaultextension="txt",filetypes=(("Text File","*.txt"),("All Files", "*.*")))
+                    text_url.write(content2)
+                    main_application.destroy()
+            elif mbox is False:
+                main_application.destroy()
+        else:
+            main_application.destroy()
+
+    except:
+        return
+
+file.add_command(label="Exit", image=exit_icon, compound=tk.LEFT,accelerator="Ctrl+Q", command=exit_fun)
 
 main_application.config(menu=main_menu)
 
