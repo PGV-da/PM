@@ -240,16 +240,107 @@ for i in color_dict:
     count+=1
 
 # View Menu
-view.add_checkbutton(label="Tool Bar", onvalue=True, offvalue=0, image=tool_bar, compound=tk.LEFT)
-view.add_checkbutton(label="Status Bar", onvalue=True, offvalue=0, image=status_bar, compound=tk.LEFT)
 
+# Tool Bar & Status Bar Hide
+show_status_bar = tk.BooleanVar()
+show_status_bar.set(True)
+show_toolbar = tk.BooleanVar()
+show_toolbar.set(True)
+
+def hide_toolbar():
+    global show_toolbar
+    if show_toolbar:
+        tool_bar_label.pack_forget()
+        show_toolbar = False
+    else:
+        text_editor.pack_forget()
+        status_bars.pack_forget()
+        tool_bar_label.pack(side=tk.TOP, fill=tk.X)
+        text_editor.pack(fill=tk.BOTH, expand=True)
+        status_bars.pack(side=tk.BOTTOM)
+        show_toolbar = False
+
+def hide_statusbar():
+    global show_status_bar
+    if show_status_bar:
+        status_bars.pack_forget()
+        show_status_bar = False
+    else:
+        status_bars.pack(side=tk.BOTTOM)
+        show_status_bar = True
+
+    
+
+view.add_checkbutton(label="Tool Bar", onvalue=True, offvalue=0, variable=show_toolbar, image=tool_bar, compound=tk.LEFT, command=hide_toolbar)
+view.add_checkbutton(label="Status Bar", onvalue=True, offvalue=0, variable=show_status_bar, image=status_bar, compound=tk.LEFT, command=hide_statusbar)
 
 # Edit Munu
-edit.add_command(label="Copy", image=copy_icon, compound=tk.LEFT,accelerator="Ctrl+C")
-edit.add_command(label="Paste", image=paste_icon, compound=tk.LEFT,accelerator="Ctrl+V")
-edit.add_command(label="Cut", image=cut_icon, compound=tk.LEFT,accelerator="Ctrl+X")
-edit.add_command(label="Clear all", image=clear_icon, compound=tk.LEFT,accelerator="Ctrl+Alt+X")
-edit.add_command(label="Find", image=find_icon, compound=tk.LEFT,accelerator="Ctrl+F")
+edit.add_command(label="Copy", image=copy_icon, compound=tk.LEFT,accelerator="Ctrl+C", command= lambda:text_editor.event_generate("<Control c>"))
+edit.add_command(label="Paste", image=paste_icon, compound=tk.LEFT,accelerator="Ctrl+V", command= lambda:text_editor.event_generate("<Control v>"))
+edit.add_command(label="Cut", image=cut_icon, compound=tk.LEFT,accelerator="Ctrl+X", command= lambda:text_editor.event_generate("<Control x>"))
+edit.add_command(label="Clear all", image=clear_icon, compound=tk.LEFT,accelerator="Ctrl+Alt+X", command= lambda:text_editor.delete(1.0,tk.END))
+
+def find_fun(event = None):
+
+    def find():
+        word = find_input.get()
+        text_editor.tag_remove("match","1.0",tk.END)
+        matches = 0
+        if word:
+            start_pos = "1.0"
+            while True:
+                start_pos = text_editor.search(word, start_pos, stopindex=tk.END)
+                if not start_pos:
+                    break
+                end_pos = f"{start_pos}+{len(word)}c"
+                text_editor.tag_add("match",start_pos,end_pos)
+                matches += 1
+                start_pos = end_pos
+                text_editor.tag_config('match', foreground="red", background="blue")
+
+    def replace():
+        word = find_input.get()
+        replace_text = replace_input.get()
+        content = text_editor.get(1.0,tk.END)
+        new_content = content.replace(word, replace_text)
+        text_editor.delete(1.0,tk.END)
+        text_editor.insert(1.0,new_content)
+        pass
+
+    find_popup = tk.Toplevel()
+    find_popup.geometry("450x200")
+    find_popup.title("Find Word")
+    find_popup.resizable(0,0)
+
+    # Frame for Find
+    find_fram = ttk.LabelFrame(find_popup,text="Find and Replace Word")
+    find_fram.pack(pady=20)
+
+    # Lable
+    text_find = ttk.Label(find_fram,text="Find")
+    text_replace = ttk.Label(find_fram,text="Replace")
+
+    # Entry Box
+    find_input = ttk.Entry(find_fram, width=30)
+    replace_input = ttk.Entry(find_fram, width=30)
+
+    # Button
+    find_button = ttk.Button(find_fram, text="Find", command=find)
+    replace_button = ttk.Button(find_fram, text="Replace", command=replace)
+
+    # Text Lable Grid
+    text_find.grid(row=0, column=0, padx=4, pady=4)
+    text_replace.grid(row=1, column=0, padx=4, pady=4)
+
+    # Entry Grid
+    find_input.grid(row=0, column=1, padx=4, pady=4)
+    replace_input.grid(row=1, column=1, padx=4, pady=4)
+
+    # Button Grid
+    find_button.grid(row=2, column=0, padx=8, pady=4)
+    replace_button.grid(row=2, column=1, padx=8, pady=4)
+
+edit.add_command(label="Find", image=find_icon, compound=tk.LEFT,accelerator="Ctrl+F", command=find_fun)
 
 # File Menu
 
@@ -308,7 +399,7 @@ def save_as_file(event = None):
 file.add_command(label="Save as", image=save_as_icon, compound=tk.LEFT,accelerator="Ctrl+Alt+S", command=save_as_file)
 
 def exit_fun(event = None):
-    global text_change
+    global text_url, text_change
     try:
         if text_change:
             mbox = messagebox.askyesnocancel("Warning","Do you want to save this file")
