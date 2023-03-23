@@ -5,7 +5,7 @@ import os
 
 main_application = tk.Tk()
 main_application.geometry("800x600")
-main_application.title("PM Notepad")
+main_application.title("Untitled - Simulation Notepad")
 
 
 main_menu = tk.Menu()
@@ -43,6 +43,20 @@ monokai_theme = tk.PhotoImage(file="icon/monokai.png")
 night_theme = tk.PhotoImage(file="icon/night_blue.png")
 
 color_theme = tk.Menu(main_menu, tearoff=False)
+theme_choose = tk.StringVar()
+
+# Theme Menu 
+color_icons = (light_theme, light_plus_theme, dark_theme, red_theme, monokai_theme, night_theme)
+color_dict = {
+    'Light Default' : ('#000000',"#ffffff"),
+    'Light Plus' : ('#474747',"#e0e0e0"),
+    'Dark' : ('#c4c4c4',"#2d2d2d"),
+    'Red' : ('#2d2d2d',"#ffe8e8"),
+    'Monokai' : ('#d3b774',"#474747"), 
+    'Night Blue' : ('#ededed',"#6b9dc2")
+}
+
+theme_choose.set('Light Default')
 
 main_menu.add_cascade(label="File", menu=file)
 main_menu.add_cascade(label="Edit", menu=edit)
@@ -118,7 +132,7 @@ text_editor.config(yscrollcommand=scroll_bar.set)
 # Font Family and Function
 
 font_now = "Arial"
-font_size_now = 16
+font_size_now = 12
 
 def change_font(main_application):
     global font_now
@@ -138,7 +152,7 @@ font_size.bind("<<ComboboxSelected>>",change_size)
 # print(tk.font.Font(font=text_editor["font"]).actual())
 
 def bold_fun():
-    text_get = tk.font.Font(font=text_editor["font"])
+    text_get = font.Font(font=text_editor["font"])
     if text_get.actual()["weight"] == 'normal':
         text_editor.configure(font=(font_now,font_size_now,"bold"))
     if text_get.actual()["weight"] == 'bold':
@@ -149,7 +163,7 @@ bold_btn.configure(command=bold_fun)
 # Italic Function
 
 def italic_fun():
-    text_get = tk.font.Font(font=text_editor["font"])
+    text_get = font.Font(font=text_editor["font"])
     if text_get.actual()["slant"] == 'roman':
         text_editor.configure(font=(font_now,font_size_now,"italic"))
     if text_get.actual()["slant"] == 'italic':
@@ -160,7 +174,7 @@ italic_btn.configure(command=italic_fun)
 # UnderLine Function
 
 def under_line_fun():
-    text_get = tk.font.Font(font=text_editor["font"])
+    text_get = font.Font(font=text_editor["font"])
     if text_get.actual()["underline"] == 0:
         text_editor.configure(font=(font_now,font_size_now,"underline"))
     if text_get.actual()["underline"] == 1:
@@ -171,7 +185,7 @@ underline_btn.configure(command=under_line_fun)
 
 # Color Choose
 def color_choose():
-    color_var = tk.colorchooser.askcolor()
+    color_var = colorchooser.askcolor()
     text_editor.configure(fg=color_var[1])
 
 font_color_btn.configure(command=color_choose)
@@ -221,22 +235,24 @@ def change_word(event = None):
 
 text_editor.bind("<<Modified>>", change_word)
 
-# Theme Menu 
-color_icons = (light_theme, light_plus_theme, dark_theme, red_theme, monokai_theme, night_theme)
-color_dict = {
-    'Light Default' : ("#000000","#ffffff"),
-    'Light Plus' : ("#474747","#e0e0e0"),
-    'Dark' : ("#c4c4c4","#2d2d2d"),
-    'Red' : ("#2d2d2d","#ffe8e8"),
-    'Monokai' : ("#d3b774","#474747"), 
-    'Night Blue' : ("#ededed","#6b9dc2")
-}
 
 
+# Color Theme Function
+
+def change_theme():
+    get_theme = theme_choose.get()
+    colour_tuple = color_dict.get(get_theme)
+    if colour_tuple is not None:
+        fg_color = colour_tuple[0]
+        bg_color = colour_tuple[1]
+        text_editor.config(background=bg_color, fg=fg_color)
+    else:
+        pass
+    
 
 count = 0
 for i in color_dict:
-    color_theme.add_radiobutton(label=i, image=color_icons[count],compound=tk.LEFT)
+    color_theme.add_radiobutton(label=i, image=color_icons[count],compound=tk.LEFT, variable=theme_choose, value=i, command=change_theme)
     count+=1
 
 # View Menu
@@ -258,7 +274,7 @@ def hide_toolbar():
         tool_bar_label.pack(side=tk.TOP, fill=tk.X)
         text_editor.pack(fill=tk.BOTH, expand=True)
         status_bars.pack(side=tk.BOTTOM)
-        show_toolbar = False
+        show_toolbar = True
 
 def hide_statusbar():
     global show_status_bar
@@ -350,6 +366,7 @@ def new_file(event = None):
     global text_url
     text_url = " "
     text_editor.delete(1.0,tk.END)
+    main_application.title("Untitled - Simulation Notepad")
 
 
 file.add_command(label="New", image=new_icon, compound=tk.LEFT,accelerator="Ctrl+N", command=new_file)
@@ -365,24 +382,39 @@ def open_file(event = None):
         return
     except:
         return
-    main_application.title(os.path.basename(text_url))
+    main_application.title(os.path.basename(text_url) + " - Simulation Notepad")
 
 file.add_command(label="Open", image=open_icon, compound=tk.LEFT,accelerator="Ctrl+O", command=open_file)
  
+'''
 def save_file(event=None):
     global text_url
     try:
         if text_url:
             content = str(text_editor.get(1.0,tk.END))
             with open(text_url,"w",encoding="utf-8") as for_read:
-                for_read.write(content)
+                for_read.write(content)           
         else:
-            text_url = filedialog.asksaveasfile(mode="w",defaultextension="txt",filetypes=(("Text File","*.txt"),("All Files", "*.*")))
+            text_url = filedialog.asksaveasfile(initialfile = 'Untitled.txt', mode="w",defaultextension="txt",filetypes=(("Text File","*.txt"),("All Files", "*.*")))
             content2 = text_editor.get(1.0,tk.END)
             text_url.write(content2)
             text_url.close()
     except:
         return
+    main_application.title(os.path.basename(text_url) + " - Simulation Notepad")
+'''
+def save_file(event=None):
+    global text_url
+    try:
+        if not text_url:
+            text_url = filedialog.asksaveasfilename(initialfile='Untitled.txt', defaultextension='.txt', filetypes=(('Text File', '*.txt'), ('All Files', '*.*')))
+        if text_url:
+            content = text_editor.get(1.0, tk.END)
+            with open(text_url, 'w', encoding='utf-8') as f:
+                f.write(content)
+    except Exception as e:
+        print(e)
+
 
 file.add_command(label="Save", image=save_icon, compound=tk.LEFT,accelerator="Ctrl+S", command=save_file)
 
@@ -390,7 +422,7 @@ def save_as_file(event = None):
     global text_url
     try:
         content = text_editor.get(1.0,tk.END)
-        text_url = filedialog.asksaveasfile(mode="w",defaultextension="txt",filetypes=(("Text File","*.txt"),("All Files", "*.*")))
+        text_url = filedialog.asksaveasfile(initialfile = 'Untitled.txt', mode="w",defaultextension="txt",filetypes=(("Text File","*.txt"),("All Files", "*.*")))
         text_url.write(content)
         text_url.close()
     except:
