@@ -20,6 +20,8 @@ exit_icon = tk.PhotoImage(file = "icon/exit.png")
 file = tk.Menu(main_menu, tearoff = False)
 
 # Edit Menu Icon
+undo_icon = tk.PhotoImage(file= "icon/undo.png")
+redo_icon = tk.PhotoImage(file= "icon/redo.png")
 copy_icon = tk.PhotoImage(file= "icon/copy.png")
 paste_icon = tk.PhotoImage(file= "icon/paste.png")
 cut_icon = tk.PhotoImage(file= "icon/cut.png")
@@ -68,7 +70,7 @@ tool_bar_label = ttk.Label(main_application)
 tool_bar_label.pack(side=tk.TOP,fill=tk.X)
 
 # Font Style Box
-font_tuple = tk.font.families()
+font_tuple = font.families()
 font_family = tk.StringVar()
 font_box = ttk.Combobox(tool_bar_label,width=30,textvariable=font_family,state="readonly")
 font_box["values"] = font_tuple
@@ -118,7 +120,7 @@ align_right_btn = ttk.Button(tool_bar_label,image=align_right_icon)
 align_right_btn.grid(row=0,column=8,padx=5)
 
 # Text Editor
-text_editor = tk.Text(main_application)
+text_editor = tk.Text(main_application, undo=True)
 text_editor.config(wrap="word", relief=tk.FLAT)
 
 
@@ -291,6 +293,22 @@ view.add_checkbutton(label="Tool Bar", onvalue=True, offvalue=0, variable=show_t
 view.add_checkbutton(label="Status Bar", onvalue=True, offvalue=0, variable=show_status_bar, image=status_bar, compound=tk.LEFT, command=hide_statusbar)
 
 # Edit Munu
+
+def undo(event = None):
+    try:
+        text_editor.edit_undo()
+    except:
+        pass
+edit.add_command(label="Undo", image=undo_icon, compound=tk.LEFT,accelerator="Ctrl+Z", command=undo)
+
+def redo(event = None):
+    try:
+        text_editor.edit_redo()
+    except:
+        pass
+
+edit.add_command(label="Redo", image=redo_icon, compound=tk.LEFT,accelerator="Ctrl+Shift+Z", command=redo)
+
 edit.add_command(label="Copy", image=copy_icon, compound=tk.LEFT,accelerator="Ctrl+C", command= lambda:text_editor.event_generate("<Control c>"))
 edit.add_command(label="Paste", image=paste_icon, compound=tk.LEFT,accelerator="Ctrl+V", command= lambda:text_editor.event_generate("<Control v>"))
 edit.add_command(label="Cut", image=cut_icon, compound=tk.LEFT,accelerator="Ctrl+X", command= lambda:text_editor.event_generate("<Control x>"))
@@ -386,7 +404,7 @@ def open_file(event = None):
 
 file.add_command(label="Open", image=open_icon, compound=tk.LEFT,accelerator="Ctrl+O", command=open_file)
  
-'''
+
 def save_file(event=None):
     global text_url
     try:
@@ -396,26 +414,13 @@ def save_file(event=None):
                 for_read.write(content)           
         else:
             text_url = filedialog.asksaveasfile(initialfile = 'Untitled.txt', mode="w",defaultextension="txt",filetypes=(("Text File","*.txt"),("All Files", "*.*")))
-            content2 = text_editor.get(1.0,tk.END)
+            content2 = str(text_editor.get(1.0,tk.END))
             text_url.write(content2)
             text_url.close()
+        main_application.title(str(os.path.basename(text_url)) + " - Simulation Notepad")
     except:
         return
-    main_application.title(os.path.basename(text_url) + " - Simulation Notepad")
-'''
-def save_file(event=None):
-    global text_url
-    try:
-        if not text_url:
-            text_url = filedialog.asksaveasfilename(initialfile='Untitled.txt', defaultextension='.txt', filetypes=(('Text File', '*.txt'), ('All Files', '*.*')))
-        if text_url:
-            content = text_editor.get(1.0, tk.END)
-            with open(text_url, 'w', encoding='utf-8') as f:
-                f.write(content)
-    except Exception as e:
-        print(e)
-
-
+    
 file.add_command(label="Save", image=save_icon, compound=tk.LEFT,accelerator="Ctrl+S", command=save_file)
 
 def save_as_file(event = None):
