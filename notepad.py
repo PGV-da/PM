@@ -136,15 +136,40 @@ text_editor.config(yscrollcommand=scroll_bar.set)
 font_now = "Arial"
 font_size_now = 12
 
+# Dictionary to store font properties    
+font_properties = {
+    "bold": False,
+    "italic": False,
+    "underline": False,
+    "font_size": 12,
+    "font_family": "Arial"
+}
+
+# Function to update font properties and apply to selected text
+def update_font_properties(property_name, property_value):
+    font_properties[property_name] = property_value
+    font_string = "{} {} {} {} {}".format(
+        font_properties["font_family"],
+        font_properties["font_size"],
+        "bold" if font_properties["bold"] else "",
+        "italic" if font_properties["italic"] else "",
+        "underline" if font_properties["underline"] else ""
+    )
+    text_editor.tag_configure("font", font=font_string)
+    text_editor.tag_add("font", "sel.first", "sel.last")
+
 def change_font(main_application):
     global font_now
+    font_size_now = font_properties.get("font_size")
     font_now = font_family.get()
+    #update_font_properties("font_family", font_now)
     text_editor.configure(font=(font_now,font_size_now))
 
 def change_size(main_application):
     global font_size_now
     font_size_now = size_variable.get()
-    text_editor.configure(font=(font_now,font_size_now))
+    update_font_properties("font_size", font_size_now)
+    #text_editor.configure(font=(font_now,font_size_now))
 
 font_box.bind("<<ComboboxSelected>>",change_font)
 font_size.bind("<<ComboboxSelected>>",change_size)
@@ -154,33 +179,21 @@ font_size.bind("<<ComboboxSelected>>",change_size)
 # print(tk.font.Font(font=text_editor["font"]).actual())
 
 def bold_fun():
-    text_get = font.Font(font=text_editor["font"])
-    if text_get.actual()["weight"] == 'normal':
-        text_editor.configure(font=(font_now,font_size_now,"bold"))
-    if text_get.actual()["weight"] == 'bold':
-        text_editor.configure(font=(font_now,font_size_now,"normal"))
+    update_font_properties("bold", not font_properties["bold"])
 
 bold_btn.configure(command=bold_fun)
 
 # Italic Function
 
 def italic_fun():
-    text_get = font.Font(font=text_editor["font"])
-    if text_get.actual()["slant"] == 'roman':
-        text_editor.configure(font=(font_now,font_size_now,"italic"))
-    if text_get.actual()["slant"] == 'italic':
-        text_editor.configure(font=(font_now,font_size_now,"roman"))
+    update_font_properties("italic", not font_properties["italic"])
 
 italic_btn.configure(command=italic_fun)
 
 # UnderLine Function
 
 def under_line_fun():
-    text_get = font.Font(font=text_editor["font"])
-    if text_get.actual()["underline"] == 0:
-        text_editor.configure(font=(font_now,font_size_now,"underline"))
-    if text_get.actual()["underline"] == 1:
-        text_editor.configure(font=(font_now,font_size_now,"normal"))
+    update_font_properties("underline", not font_properties["underline"])
 
 underline_btn.configure(command=under_line_fun)
 
@@ -230,9 +243,10 @@ def change_word(event = None):
     global text_change
     if text_editor.edit_modified():
         text_change = True
+        row, col = map(int, text_editor.index("end-1c").split("."))
         word = len(text_editor.get(1.0,"end-1c").split())
         character = len(text_editor.get(1.0,"end-1c").replace(" ",""))
-        status_bars.config(text=f"character : {character} word : {word}")
+        status_bars.config(text=f"Line: {row} | Character : {character} | Word : {word}")
     text_editor.edit_modified(False)
 
 text_editor.bind("<<Modified>>", change_word)
