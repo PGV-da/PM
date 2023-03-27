@@ -230,9 +230,10 @@ def change_word(event = None):
     global text_change
     if text_editor.edit_modified():
         text_change = True
+        row, col = map(int, text_editor.index("end-1c").split("."))
         word = len(text_editor.get(1.0,"end-1c").split())
         character = len(text_editor.get(1.0,"end-1c").replace(" ",""))
-        status_bars.config(text=f"character : {character} word : {word}")
+        status_bars.config(text=f"Line: {row} | Character : {character} | Word : {word}")
     text_editor.edit_modified(False)
 
 text_editor.bind("<<Modified>>", change_word)
