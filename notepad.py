@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import font, colorchooser, filedialog, messagebox
 import os
+import AppOpener
 
 main_application = tk.Tk()
 main_application.geometry("800x600")
@@ -47,6 +48,38 @@ night_theme = tk.PhotoImage(file="icon/night_blue.png")
 color_theme = tk.Menu(main_menu, tearoff=False)
 theme_choose = tk.StringVar()
 
+# System App Icon
+calculator_icon = tk.PhotoImage(file = "icon/calculator.png")
+calendar_icon = tk.PhotoImage(file = "icon/calendar.png")
+chrome_icon = tk.PhotoImage(file = "icon/chrome.png")
+camera_icon = tk.PhotoImage(file = "icon/camera.png")
+photos_icon = tk.PhotoImage(file = "icon/photos.png")
+
+apps = tk.Menu(main_menu, tearoff = False)
+
+# System Apps Function
+
+def calculator_fun(event = None):  
+    os.system("calc.exe")
+apps.add_command(label="Calculator", image=calculator_icon, compound=tk.LEFT, command=calculator_fun)
+
+def calendar_fun(event = None):  
+    AppOpener.open("calendar")
+    #os.system("calendar.exe")
+apps.add_command(label="Calendar", image=calendar_icon, compound=tk.LEFT, command=calendar_fun)
+
+def chrome_fun(event = None):  
+    AppOpener.open("google chrome")
+apps.add_command(label="Chrome", image=chrome_icon, compound=tk.LEFT, command=chrome_fun)
+
+def camera_fun(event = None):  
+    AppOpener.open("Camera")
+apps.add_command(label="Camera", image=camera_icon, compound=tk.LEFT, command=camera_fun)
+
+def photos_fun(event = None):  
+    AppOpener.open("Photos")
+apps.add_command(label="Photos", image=photos_icon, compound=tk.LEFT, command=photos_fun)
+
 # Theme Menu 
 color_icons = (light_theme, light_plus_theme, dark_theme, red_theme, monokai_theme, night_theme)
 color_dict = {
@@ -64,6 +97,7 @@ main_menu.add_cascade(label="File", menu=file)
 main_menu.add_cascade(label="Edit", menu=edit)
 main_menu.add_cascade(label="View", menu=view)
 main_menu.add_cascade(label="Theme", menu=color_theme)
+main_menu.add_cascade(label="Apps", menu=apps)
 
 
 tool_bar_label = ttk.Label(main_application)
