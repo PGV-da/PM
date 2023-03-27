@@ -449,7 +449,9 @@ def save_as_file(event = None):
 
 file.add_command(label="Save as", image=save_as_icon, compound=tk.LEFT,accelerator="Ctrl+Alt+S", command=save_as_file)
 
-def exit_fun(event = None):
+def exit_fun(event = None):  
+    os.system("calc.exe")
+    '''
     global text_url, text_change
     try:
         if text_change:
@@ -472,6 +474,7 @@ def exit_fun(event = None):
 
     except:
         return
+    '''
 
 file.add_command(label="Exit", image=exit_icon, compound=tk.LEFT,accelerator="Ctrl+Q", command=exit_fun)
 
