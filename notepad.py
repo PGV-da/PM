@@ -431,11 +431,12 @@ def open_file(event = None):
         with open(text_url,"r") as for_read:
             text_editor.delete(1.0,tk.END)
             text_editor.insert(1.0,for_read.read())
+        main_application.title(os.path.abspath(text_url) + " - Simulation Notepad")
     except FileNotFoundError:
         return
     except:
         return
-    main_application.title(os.path.basename(text_url) + " - Simulation Notepad")
+    
 
 file.add_command(label="Open", image=open_icon, compound=tk.LEFT,accelerator="Ctrl+O", command=open_file)
  
@@ -443,18 +444,20 @@ file.add_command(label="Open", image=open_icon, compound=tk.LEFT,accelerator="Ct
 def save_file(event=None):
     global text_url
     try:
-        if text_url:
-            content = str(text_editor.get(1.0,tk.END))
-            with open(text_url,"w",encoding="utf-8") as for_read:
-                for_read.write(content)           
+        if text_url and hasattr(text_url, 'name'):
+            content = str(text_editor.get("1.0", tk.END))
+            with open(text_url.name, "w", encoding="utf-8") as file:
+                file.write(content)
+            main_application.title(text_url.name + " - Simulation Notepad")
         else:
-            text_url = filedialog.asksaveasfile(initialfile = 'Untitled.txt', mode="w",defaultextension="txt",filetypes=(("Text File","*.txt"),("All Files", "*.*")))
-            content2 = str(text_editor.get(1.0,tk.END))
-            text_url.write(content2)
-            text_url.close()
-        main_application.title(str(os.path.basename(text_url)) + " - Simulation Notepad")
-    except:
-        return
+            text_url = filedialog.asksaveasfile(initialfile='Untitled.txt', mode="w", defaultextension=".txt", filetypes=(("Text File", "*.txt"), ("All Files", "*.*")))
+            if text_url and text_url.name:
+                content = str(text_editor.get("1.0", tk.END))
+                text_url.write(content)
+                text_url.close()
+                main_application.title(text_url.name + " - Simulation Notepad")
+    except Exception as e:
+        pass   
     
 file.add_command(label="Save", image=save_icon, compound=tk.LEFT,accelerator="Ctrl+S", command=save_file)
 
@@ -465,6 +468,7 @@ def save_as_file(event = None):
         text_url = filedialog.asksaveasfile(initialfile = 'Untitled.txt', mode="w",defaultextension="txt",filetypes=(("Text File","*.txt"),("All Files", "*.*")))
         text_url.write(content)
         text_url.close()
+        main_application.title(text_url.name + " - Simulation Notepad")
     except:
         return
 
