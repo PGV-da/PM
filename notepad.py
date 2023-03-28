@@ -444,18 +444,18 @@ file.add_command(label="Open", image=open_icon, compound=tk.LEFT,accelerator="Ct
 def save_file(event=None):
     global text_url
     try:
-        if text_url and hasattr(text_url, 'name'):
-            content = str(text_editor.get("1.0", tk.END))
-            with open(text_url.name, "w", encoding="utf-8") as file:
-                file.write(content)
+        if text_url != " ":
+            print(text_url)
+            content = str(text_editor.get(1.0,tk.END))
+            with open(text_url,"w",encoding="utf-8") as for_read:
+                for_read.write(content)     
             main_application.title(text_url.name + " - Simulation Notepad")
         else:
-            text_url = filedialog.asksaveasfile(initialfile='Untitled.txt', mode="w", defaultextension=".txt", filetypes=(("Text File", "*.txt"), ("All Files", "*.*")))
-            if text_url and text_url.name:
-                content = str(text_editor.get("1.0", tk.END))
-                text_url.write(content)
-                text_url.close()
-                main_application.title(text_url.name + " - Simulation Notepad")
+            text_url = filedialog.asksaveasfile(initialfile = 'Untitled.txt', mode="w",defaultextension="txt",filetypes=(("Text File","*.txt"),("All Files", "*.*")))
+            content2 = str(text_editor.get(1.0,tk.END))
+            text_url.write(content2)
+            text_url.close()
+            main_application.title(text_url.name + " - Simulation Notepad")
     except Exception as e:
         pass   
     
