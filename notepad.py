@@ -329,11 +329,11 @@ def hide_statusbar():
     else:
         status_bars.pack(side=tk.BOTTOM)
         show_status_bar = True
-
     
 
 view.add_checkbutton(label="Tool Bar", onvalue=True, offvalue=0, variable=show_toolbar, image=tool_bar, compound=tk.LEFT, command=hide_toolbar)
 view.add_checkbutton(label="Status Bar", onvalue=True, offvalue=0, variable=show_status_bar, image=status_bar, compound=tk.LEFT, command=hide_statusbar)
+
 
 # Pronounce Menu
 
@@ -351,8 +351,10 @@ def get_all_text():
     all_text = text_editor.get("1.0", "end-1c")
     speak_text(all_text)
 
-pronounce.add_command(label="Read", image=prono, compound=tk.LEFT, command=get_selected_text)
-pronounce.add_command(label="Read All", image=prono_all, compound=tk.LEFT, command=get_all_text)
+pronounce.add_command(label="Read", image=prono, compound=tk.LEFT, accelerator="Ctrl+P", command=get_selected_text)
+main_application.bind("<Control-p>", get_selected_text)
+pronounce.add_command(label="Read All", image=prono_all, compound=tk.LEFT, accelerator="Ctrl+r", command=get_all_text)
+main_application.bind("<Control-r>", lambda event: get_all_text())
 
 # Edit Munu
 
