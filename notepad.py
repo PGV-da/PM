@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import font, colorchooser, filedialog, messagebox
 import os
 import AppOpener
+import pyttsx3
 
 main_application = tk.Tk()
 main_application.geometry("800x600")
@@ -36,6 +37,12 @@ tool_bar = tk.PhotoImage(file="icon/tool_bar.png")
 status_bar = tk.PhotoImage(file="icon/status_bar.png")
 
 view = tk.Menu(main_menu, tearoff = False)
+
+# Pronounce Menu Icon
+prono = tk.PhotoImage(file="icon/pronounce.png")
+prono_all = tk.PhotoImage(file="icon/pronounce_all.png")
+
+pronounce = tk.Menu(main_menu, tearoff = False)
 
 # Theme Color
 light_theme = tk.PhotoImage(file="icon/light_default.png")
@@ -96,6 +103,7 @@ theme_choose.set('Light Default')
 main_menu.add_cascade(label="File", menu=file)
 main_menu.add_cascade(label="Edit", menu=edit)
 main_menu.add_cascade(label="View", menu=view)
+main_menu.add_cascade(label="Pronounce", menu=pronounce)
 main_menu.add_cascade(label="Theme", menu=color_theme)
 main_menu.add_cascade(label="Apps", menu=apps)
 
@@ -327,6 +335,25 @@ def hide_statusbar():
 view.add_checkbutton(label="Tool Bar", onvalue=True, offvalue=0, variable=show_toolbar, image=tool_bar, compound=tk.LEFT, command=hide_toolbar)
 view.add_checkbutton(label="Status Bar", onvalue=True, offvalue=0, variable=show_status_bar, image=status_bar, compound=tk.LEFT, command=hide_statusbar)
 
+# Pronounce Menu
+
+def speak_text(text):
+    engine = pyttsx3.init()
+    engine.say(text)
+    engine.runAndWait()
+
+def get_selected_text(event = None):
+    if text_editor.tag_ranges("sel"):
+        selected_text = text_editor.selection_get()
+        speak_text(selected_text)
+
+def get_all_text():
+    all_text = text_editor.get("1.0", "end-1c")
+    speak_text(all_text)
+
+pronounce.add_command(label="Read", image=prono, compound=tk.LEFT, command=get_selected_text)
+pronounce.add_command(label="Read All", image=prono_all, compound=tk.LEFT, command=get_all_text)
+
 # Edit Munu
 
 def undo(event = None):
@@ -454,7 +481,6 @@ def save_file(event=None):
     global text_url
     try:
         if text_url != " ":
-            print(text_url)
             content = str(text_editor.get(1.0,tk.END))
             with open(text_url,"w",encoding="utf-8") as for_read:
                 for_read.write(content)     
