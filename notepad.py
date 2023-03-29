@@ -335,6 +335,7 @@ def undo(event = None):
     except:
         pass
 edit.add_command(label="Undo", image=undo_icon, compound=tk.LEFT,accelerator="Ctrl+Z", command=undo)
+main_application.bind("<Control-z>", undo)
 
 def redo(event = None):
     try:
@@ -343,11 +344,17 @@ def redo(event = None):
         pass
 
 edit.add_command(label="Redo", image=redo_icon, compound=tk.LEFT,accelerator="Ctrl+Shift+Z", command=redo)
+main_application.bind("<Control-Shift-z>", redo)
 
 edit.add_command(label="Copy", image=copy_icon, compound=tk.LEFT,accelerator="Ctrl+C", command= lambda:text_editor.event_generate("<Control c>"))
 edit.add_command(label="Paste", image=paste_icon, compound=tk.LEFT,accelerator="Ctrl+V", command= lambda:text_editor.event_generate("<Control v>"))
 edit.add_command(label="Cut", image=cut_icon, compound=tk.LEFT,accelerator="Ctrl+X", command= lambda:text_editor.event_generate("<Control x>"))
-edit.add_command(label="Clear all", image=clear_icon, compound=tk.LEFT,accelerator="Ctrl+Alt+X", command= lambda:text_editor.delete(1.0,tk.END))
+
+def clear_all():
+    text_editor.delete(1.0, tk.END)
+
+edit.add_command(label="Clear all", image=clear_icon, compound=tk.LEFT,accelerator="Ctrl+Alt+X", command= clear_all)
+main_application.bind("<Control-Alt-x>", clear_all)
 
 def find_fun(event = None):
 
@@ -410,6 +417,7 @@ def find_fun(event = None):
     replace_button.grid(row=2, column=1, padx=8, pady=4)
 
 edit.add_command(label="Find", image=find_icon, compound=tk.LEFT,accelerator="Ctrl+F", command=find_fun)
+main_application.bind("<Control-f>", find_fun)
 
 # File Menu
 
@@ -423,6 +431,7 @@ def new_file(event = None):
 
 
 file.add_command(label="New", image=new_icon, compound=tk.LEFT,accelerator="Ctrl+N", command=new_file)
+main_application.bind("<Control-n>", new_file)
 
 def open_file(event = None):
     global text_url
@@ -439,7 +448,7 @@ def open_file(event = None):
     
 
 file.add_command(label="Open", image=open_icon, compound=tk.LEFT,accelerator="Ctrl+O", command=open_file)
- 
+main_application.bind("<Control-o>", open_file)
 
 def save_file(event=None):
     global text_url
@@ -460,6 +469,7 @@ def save_file(event=None):
         pass   
     
 file.add_command(label="Save", image=save_icon, compound=tk.LEFT,accelerator="Ctrl+S", command=save_file)
+main_application.bind("<Control-s>", save_file)
 
 def save_as_file(event = None):
     global text_url
@@ -473,6 +483,7 @@ def save_as_file(event = None):
         return
 
 file.add_command(label="Save as", image=save_as_icon, compound=tk.LEFT,accelerator="Ctrl+Alt+S", command=save_as_file)
+main_application.bind("<Control-Alt-s>", save_as_file)
 
 def exit_fun(event = None):
     global text_url, text_change
@@ -499,6 +510,7 @@ def exit_fun(event = None):
         return
 
 file.add_command(label="Exit", image=exit_icon, compound=tk.LEFT,accelerator="Ctrl+Q", command=exit_fun)
+main_application.bind("<Control-q>", exit_fun)
 
 main_application.config(menu=main_menu)
 
