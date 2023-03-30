@@ -196,41 +196,69 @@ font_size.bind("<<ComboboxSelected>>",change_size)
 # print(tk.font.Font(font=text_editor["font"]).actual())
 
 def bold_fun():
-    text_get = font.Font(font=text_editor["font"])
-    if text_get.actual()["weight"] == 'normal':
-        text_editor.configure(font=(font_now,font_size_now,"bold"))
-    if text_get.actual()["weight"] == 'bold':
-        text_editor.configure(font=(font_now,font_size_now,"normal"))
+    if not text_editor.tag_ranges("sel"):
+        return
+    
+    bold_font = font.Font(text_editor, text_editor.cget("font"))
+    bold_font.configure(weight="bold")
+    text_editor.tag_configure("bold", font=bold_font)
+
+    current_tags = text_editor.tag_names("sel.first")
+    if "bold" in current_tags:
+        text_editor.tag_remove("bold", "sel.first", "sel.last")
+    else:
+        text_editor.tag_add("bold", "sel.first", "sel.last")
+    
 
 bold_btn.configure(command=bold_fun)
 
 # Italic Function
 
 def italic_fun():
-    text_get = font.Font(font=text_editor["font"])
-    if text_get.actual()["slant"] == 'roman':
-        text_editor.configure(font=(font_now,font_size_now,"italic"))
-    if text_get.actual()["slant"] == 'italic':
-        text_editor.configure(font=(font_now,font_size_now,"roman"))
+    if not text_editor.tag_ranges("sel"):
+        return
+    
+    italic_font = font.Font(text_editor, text_editor.cget("font"))
+    italic_font.configure(slant="italic")
+    text_editor.tag_configure("italic", font=italic_font)
+
+    current_tags = text_editor.tag_names("sel.first")
+    if "italic" in current_tags:
+        text_editor.tag_remove("italic", "sel.first", "sel.last")
+    else:
+        text_editor.tag_add("italic", "sel.first", "sel.last")
 
 italic_btn.configure(command=italic_fun)
 
 # UnderLine Function
 
 def under_line_fun():
-    text_get = font.Font(font=text_editor["font"])
-    if text_get.actual()["underline"] == 0:
-        text_editor.configure(font=(font_now,font_size_now,"underline"))
-    if text_get.actual()["underline"] == 1:
-        text_editor.configure(font=(font_now,font_size_now,"normal"))
+    if not text_editor.tag_ranges("sel"):
+        return
+    
+    underline_font = font.Font(text_editor, text_editor.cget("font"))
+    underline_font.configure(underline=True)
+    text_editor.tag_configure("underline", font=underline_font)
+
+    current_tags = text_editor.tag_names("sel.first")
+    if "underline" in current_tags:
+        text_editor.tag_remove("underline", "sel.first", "sel.last")
+    else:
+        text_editor.tag_add("underline", "sel.first", "sel.last")
 
 underline_btn.configure(command=under_line_fun)
 
 
 # Color Choose
 def color_choose():
-    color_var = colorchooser.askcolor()
-    text_editor.configure(fg=color_var[1])
+    color = colorchooser.askcolor()
+    if color:
+        text_editor.tag_configure("color", foreground=color)
+
+        current_tags = text_editor.tag_names("sel.first")
+        if "color" in current_tags:
+            text_editor.tag_remove("color", "sel.first", "sel.last")
+        text_editor.tag_add("color", "sel.first", "sel.last")
 
 font_color_btn.configure(command=color_choose)
 
