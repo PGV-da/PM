@@ -41,6 +41,7 @@ view = tk.Menu(main_menu, tearoff = False)
 # Pronounce Menu Icon
 prono = tk.PhotoImage(file="icon/pronounce.png")
 prono_all = tk.PhotoImage(file="icon/pronounce_all.png")
+stop_ = tk.PhotoImage(file="icon/stop.png")
 
 pronounce = tk.Menu(main_menu, tearoff = False)
 
@@ -341,6 +342,7 @@ def speak_text(text):
     engine = pyttsx3.init()
     engine.say(text)
     engine.runAndWait()
+    return engine
 
 def get_selected_text(event = None):
     if text_editor.tag_ranges("sel"):
@@ -351,10 +353,15 @@ def get_all_text():
     all_text = text_editor.get("1.0", "end-1c")
     speak_text(all_text)
 
+def stop_speaking():
+    pyttsx3.init().stop()
+
 pronounce.add_command(label="Read", image=prono, compound=tk.LEFT, accelerator="Ctrl+P", command=get_selected_text)
 main_application.bind("<Control-p>", get_selected_text)
 pronounce.add_command(label="Read All", image=prono_all, compound=tk.LEFT, accelerator="Ctrl+r", command=get_all_text)
 main_application.bind("<Control-r>", lambda event: get_all_text())
+pronounce.add_command(label="Stop Read", image=stop_, compound=tk.LEFT, accelerator="Ctrl+l", command=stop_speaking)
+main_application.bind("<Control-l>", lambda event: stop_speaking())
 
 # Edit Munu
 
@@ -372,8 +379,8 @@ def redo(event = None):
     except:
         pass
 
-edit.add_command(label="Redo", image=redo_icon, compound=tk.LEFT,accelerator="Ctrl+Shift+Z", command=redo)
-main_application.bind("<Control-Shift-z>", redo)
+edit.add_command(label="Redo", image=redo_icon, compound=tk.LEFT, command=redo)
+#main_application.bind("<Control-Shift-z>", redo)
 
 edit.add_command(label="Copy", image=copy_icon, compound=tk.LEFT,accelerator="Ctrl+C", command= lambda:text_editor.event_generate("<Control c>"))
 edit.add_command(label="Paste", image=paste_icon, compound=tk.LEFT,accelerator="Ctrl+V", command= lambda:text_editor.event_generate("<Control v>"))
@@ -382,8 +389,8 @@ edit.add_command(label="Cut", image=cut_icon, compound=tk.LEFT,accelerator="Ctrl
 def clear_all():
     text_editor.delete(1.0, tk.END)
 
-edit.add_command(label="Clear all", image=clear_icon, compound=tk.LEFT,accelerator="Ctrl+Alt+X", command= clear_all)
-main_application.bind("<Control-Alt-x>", clear_all)
+edit.add_command(label="Clear all", image=clear_icon, compound=tk.LEFT, command= clear_all)
+#main_application.bind("<Control-Alt-x>", clear_all)
 
 def find_fun(event = None):
 
@@ -510,8 +517,8 @@ def save_as_file(event = None):
     except:
         return
 
-file.add_command(label="Save as", image=save_as_icon, compound=tk.LEFT,accelerator="Ctrl+Alt+S", command=save_as_file)
-main_application.bind("<Control-Alt-s>", save_as_file)
+file.add_command(label="Save as", image=save_as_icon, compound=tk.LEFT, command=save_as_file)
+#main_application.bind("<Control-Alt-s>", save_as_file)
 
 def exit_fun(event = None):
     global text_url, text_change
