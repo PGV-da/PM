@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import font, colorchooser, filedialog, messagebox
+from googletrans import Translator
 import os
 import AppOpener
 import pyttsx3
@@ -44,6 +45,11 @@ prono_all = tk.PhotoImage(file="icon/pronounce_all.png")
 stop_ = tk.PhotoImage(file="icon/stop.png")
 
 pronounce = tk.Menu(main_menu, tearoff = False)
+
+# Translator Menu Icon
+trans_icon = tk.PhotoImage(file="icon/pronounce.png")
+
+trans = tk.Menu(main_menu, tearoff = False)
 
 # Theme Color
 light_theme = tk.PhotoImage(file="icon/light_default.png")
@@ -105,6 +111,7 @@ main_menu.add_cascade(label="File", menu=file)
 main_menu.add_cascade(label="Edit", menu=edit)
 main_menu.add_cascade(label="View", menu=view)
 main_menu.add_cascade(label="Pronounce", menu=pronounce)
+main_menu.add_cascade(label="Translator", menu=trans)
 main_menu.add_cascade(label="Theme", menu=color_theme)
 main_menu.add_cascade(label="Apps", menu=apps)
 
@@ -334,6 +341,28 @@ def hide_statusbar():
 
 view.add_checkbutton(label="Tool Bar", onvalue=True, offvalue=0, variable=show_toolbar, image=tool_bar, compound=tk.LEFT, command=hide_toolbar)
 view.add_checkbutton(label="Status Bar", onvalue=True, offvalue=0, variable=show_status_bar, image=status_bar, compound=tk.LEFT, command=hide_statusbar)
+
+# Translator Menu
+
+# Define function for translating selected text
+def translate_text():
+    translator = Translator()
+    selected_text = text_editor.selection_get()
+    if selected_text:
+        detected_language = translator.detect(selected_text).lang
+        if detected_language == 'ta':
+            translated_text = translator.translate(selected_text, src="ta", dest="en").text
+        else:
+            translated_text = translator.translate(selected_text, src="en", dest="ta").text
+        translated_text = translated_text.replace("&#39;", "'")  # Replace HTML entities
+        translated_text = translated_text.replace("&quot;", "\"")
+        translated_text = translated_text.replace("&amp;", "&")
+        text_editor.delete("sel.first", "sel.last")  # Delete the selected text
+        text_editor.insert("insert", translated_text)  # Insert the translated text
+
+
+trans.add_command(label="Translate", image=trans_icon, compound=tk.LEFT, accelerator="Ctrl+T", command=translate_text)
+main_application.bind("<Control-t>", lambda event: translate_text())
 
 
 # Pronounce Menu
