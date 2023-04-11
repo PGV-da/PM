@@ -2,9 +2,11 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import font, colorchooser, filedialog, messagebox
 from googletrans import Translator
+from langdetect import detect
 import os
 import AppOpener
 import pyttsx3
+import threading
 
 main_application = tk.Tk()
 main_application.geometry("800x600")
@@ -346,20 +348,31 @@ view.add_checkbutton(label="Status Bar", onvalue=True, offvalue=0, variable=show
 
 # Define function for translating selected text
 def translate_text():
-    translator = Translator()
-    selected_text = text_editor.selection_get()
-    if selected_text:
-        detected_language = translator.detect(selected_text).lang
-        if detected_language == 'ta':
-            translated_text = translator.translate(selected_text, src="ta", dest="en").text
-        else:
-            translated_text = translator.translate(selected_text, src="en", dest="ta").text
-        translated_text = translated_text.replace("&#39;", "'")  # Replace HTML entities
-        translated_text = translated_text.replace("&quot;", "\"")
-        translated_text = translated_text.replace("&amp;", "&")
-        text_editor.delete("sel.first", "sel.last")  # Delete the selected text
-        text_editor.insert("insert", translated_text)  # Insert the translated text
+    try:
+        selected_text = text_editor.selection_get(selection='PRIMARY')
+        if selected_text:
+            detected_language = detect(selected_text)
+            translator = Translator(service_urls=['translate.google.com'])
 
+            if detected_language == 'ta':
+                translated_text = translator.translate(selected_text, src="ta", dest="en").text
+            else:
+                translated_text = translator.translate(selected_text, src="en", dest="ta").text
+            translated_text = translated_text.replace("&#39;", "'")  # Replace HTML entities
+            translated_text = translated_text.replace("&quot;", "\"")
+            translated_text = translated_text.replace("&amp;", "&")
+            show_translated_text(translated_text)
+    except tk.TclError:
+        pass
+
+
+# Define function for displaying translated text in a new window
+def show_translated_text(translated_text):
+    top = tk.Toplevel()
+    top.title("Translated Text")
+    text_widget = tk.Text(top)
+    text_widget.insert("insert", translated_text)
+    text_widget.pack()
 
 trans.add_command(label="Translate", image=trans_icon, compound=tk.LEFT, accelerator="Ctrl+T", command=translate_text)
 main_application.bind("<Control-t>", lambda event: translate_text())
@@ -367,23 +380,39 @@ main_application.bind("<Control-t>", lambda event: translate_text())
 
 # Pronounce Menu
 
-def speak_text(text):
+engine = pyttsx3.init()
+all_threads = []
+stop_events = []
+
+def speak_text(text, stop_event):
+    global engine
     engine = pyttsx3.init()
     engine.say(text)
     engine.runAndWait()
-    return engine
+    while not stop_event.is_set():
+        pass
+    engine.stop()
 
-def get_selected_text(event = None):
+def get_selected_text(event=None):
     if text_editor.tag_ranges("sel"):
         selected_text = text_editor.selection_get()
-        speak_text(selected_text)
+        threading.Thread(target=speak_text, args=(selected_text, threading.Event())).start()
 
 def get_all_text():
+    global all_threads, stop_events
     all_text = text_editor.get("1.0", "end-1c")
-    speak_text(all_text)
+    stop_event = threading.Event()
+    stop_events.append(stop_event)
+    thread = threading.Thread(target=speak_text, args=(all_text, stop_event))
+    all_threads.append(thread)
+    thread.start()
 
 def stop_speaking():
-    pyttsx3.init().stop()
+    global engine, stop_events
+    for stop_event in stop_events:
+        stop_event.set()
+    engine.stop()
+    stop_events = []
 
 pronounce.add_command(label="Read", image=prono, compound=tk.LEFT, accelerator="Ctrl+P", command=get_selected_text)
 main_application.bind("<Control-p>", get_selected_text)
@@ -548,6 +577,7 @@ def save_as_file(event = None):
 
 file.add_command(label="Save as", image=save_as_icon, compound=tk.LEFT, command=save_as_file)
 #main_application.bind("<Control-Alt-s>", save_as_file)
+
 
 def exit_fun(event = None):
     global text_url, text_change
