@@ -384,9 +384,7 @@ engine = pyttsx3.init()
 all_threads = []
 stop_events = []
 
-def speak_text(text, stop_event):
-    global engine
-    engine = pyttsx3.init()
+def speak_text(text, stop_event, engine):
     engine.say(text)
     engine.runAndWait()
     while not stop_event.is_set():
@@ -396,23 +394,30 @@ def speak_text(text, stop_event):
 def get_selected_text(event=None):
     if text_editor.tag_ranges("sel"):
         selected_text = text_editor.selection_get()
-        threading.Thread(target=speak_text, args=(selected_text, threading.Event())).start()
+        thread = threading.Thread(target=speak_text, args=(selected_text, threading.Event(), pyttsx3.init()))
+        all_threads.append(thread)
+        thread.start()
 
 def get_all_text():
     global all_threads, stop_events
     all_text = text_editor.get("1.0", "end-1c")
     stop_event = threading.Event()
     stop_events.append(stop_event)
-    thread = threading.Thread(target=speak_text, args=(all_text, stop_event))
+    engine = pyttsx3.init()
+    thread = threading.Thread(target=speak_text, args=(all_text, stop_event, engine))
     all_threads.append(thread)
     thread.start()
 
 def stop_speaking():
-    global engine, stop_events
+    global all_threads, stop_events
     for stop_event in stop_events:
         stop_event.set()
-    engine.stop()
+    for thread in all_threads:
+        thread.join()
+    all_threads = []
     stop_events = []
+    engine = pyttsx3.init()
+    engine.stop()
 
 pronounce.add_command(label="Read", image=prono, compound=tk.LEFT, accelerator="Ctrl+P", command=get_selected_text)
 main_application.bind("<Control-p>", get_selected_text)
@@ -420,6 +425,8 @@ pronounce.add_command(label="Read All", image=prono_all, compound=tk.LEFT, accel
 main_application.bind("<Control-r>", lambda event: get_all_text())
 pronounce.add_command(label="Stop Read", image=stop_, compound=tk.LEFT, accelerator="Ctrl+l", command=stop_speaking)
 main_application.bind("<Control-l>", lambda event: stop_speaking())
+
+
 
 # Edit Munu
 
