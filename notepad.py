@@ -350,7 +350,7 @@ view.add_checkbutton(label="Status Bar", onvalue=True, offvalue=0, variable=show
 def translate_text():
     try:
         selected_text = text_editor.selection_get(selection='PRIMARY')
-        if selected_text:
+        if text_editor.tag_ranges("sel"):
             detected_language = detect(selected_text)
             translator = Translator(service_urls=['translate.google.com'])
 
@@ -362,6 +362,8 @@ def translate_text():
             translated_text = translated_text.replace("&quot;", "\"")
             translated_text = translated_text.replace("&amp;", "&")
             show_translated_text(translated_text)
+        else:
+            messagebox.showwarning("Warning", "Please select text to translate")
     except tk.TclError:
         pass
 
@@ -397,6 +399,8 @@ def get_selected_text(event=None):
         thread = threading.Thread(target=speak_text, args=(selected_text, threading.Event(), pyttsx3.init()))
         all_threads.append(thread)
         thread.start()
+    else:
+        messagebox.showwarning("Warning", "Please select text to Read")
 
 def get_all_text():
     global all_threads, stop_events
@@ -408,23 +412,12 @@ def get_all_text():
     all_threads.append(thread)
     thread.start()
 
-def stop_speaking():
-    global all_threads, stop_events
-    for stop_event in stop_events:
-        stop_event.set()
-    for thread in all_threads:
-        thread.join()
-    all_threads = []
-    stop_events = []
-    engine = pyttsx3.init()
-    engine.stop()
 
 pronounce.add_command(label="Read", image=prono, compound=tk.LEFT, accelerator="Ctrl+P", command=get_selected_text)
 main_application.bind("<Control-p>", get_selected_text)
 pronounce.add_command(label="Read All", image=prono_all, compound=tk.LEFT, accelerator="Ctrl+r", command=get_all_text)
 main_application.bind("<Control-r>", lambda event: get_all_text())
-pronounce.add_command(label="Stop Read", image=stop_, compound=tk.LEFT, accelerator="Ctrl+l", command=stop_speaking)
-main_application.bind("<Control-l>", lambda event: stop_speaking())
+
 
 
 
