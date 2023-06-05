@@ -1,0 +1,5 @@
+tkinter==8.6
+ttk==0.3.1
+googletrans==4.0.0-rc1
+langdetect==1.0.9
+pyttsx3==2.90
