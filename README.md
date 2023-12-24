@@ -52,7 +52,7 @@ The Simulation Notepad is a software tool designed for creating and editing simu
 
 To install and run the Simulation Notepad, follow these steps:
 
-1. Clone the project repository from [GitHub](https://github.com/Vikramji283/PM).
+1. Clone the project repository from [GitHub](https://github.com/PGV-da/PM).
 2. Install Python 3.x on your system if not already installed.
 3. Install the required dependencies by running the command: `pip install -r requirements.txt`.
 4. Run the application by executing the command: `python notepad.py`.
@@ -63,4 +63,4 @@ The Simulation Notepad is a powerful and user-friendly software tool for creatin
 
 ## Contributing
 
-Contributions to Simulation Notepad are welcome! If you encounter any issues or have suggestions for improvements, please submit them through the [issue tracker](https://github.com/Vikramji283/PM/issues). You can also contribute by forking the repository, making changes, and submitting a pull request.
+Contributions to Simulation Notepad are welcome! If you encounter any issues or have suggestions for improvements, please submit them through the [issue tracker](https://github.com/PGV-da/PM/issues). You can also contribute by forking the repository, making changes, and submitting a pull request.
