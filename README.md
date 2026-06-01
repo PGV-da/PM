@@ -63,4 +63,4 @@ The Simulation Notepad is a powerful and user-friendly software tool for creatin
 
 ## Contributing
 
-Contributions to Simulation Notepad are welcome! If you encounter any issues or have suggestions for improvements, please submit them through the [issue tracker](https://github.com/PGV-da/PM/issues). You can also contribute by forking the repository, making changes, and submitting a pull request.
+Contributions to Simulation Notepad are welcome. If you encounter any issues or have suggestions for improvements, please submit them through the [issue tracker](https://github.com/PGV-da/PM/issues). You can also contribute by forking the repository, making changes, and submitting a pull request.
